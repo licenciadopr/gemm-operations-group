@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GEMM Operations Group</title>
+  <meta name="description" content="GEMM Operations Group — Professional facility and property operations solutions built on trust, efficiency, and results." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0B1D3A;
+      --navy2:  #132952;
+      --gold:   #C9A84C;
+      --gold2:  #E5C06A;
+      --white:  #FFFFFF;
+      --offwhite: #F7F8FA;
+      --light:  #EAF0FB;
+      --text:   #1A2740;
+      --muted:  #5C6B82;
+      --border: #D4DDE8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(11, 29, 58, 0.97);
+      backdrop-filter: blur(8px);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 1.3rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--white); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta {
+      background: var(--gold);
+      color: var(--navy) !important;
+      padding: 0.5rem 1.25rem;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #1e3a6e 100%);
+      display: flex; align-items: center;
+      padding: 120px 5% 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 3rem;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-logo-wrap img {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      border-radius: 16px;
+      animation: float 5s ease-in-out infinite;
+      filter: drop-shadow(0 12px 40px rgba(0,0,0,0.45));
+    }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-logo-wrap { order: -1; }
+      .hero-logo-wrap img { max-width: 260px; }
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.75);
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+      line-height: 1.75;
+    }
+
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--navy);
+      padding: 0.9rem 2rem;
+      border-radius: 5px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+
+    .btn-outline {
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: var(--white);
+      padding: 0.9rem 2rem;
+      border-radius: 5px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-block;
+    }
+
+    .btn-outline:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    /* ── STATS BAR ─────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 5%;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+    }
+
+    .stat-item {
+      flex: 1; min-width: 160px;
+      text-align: center;
+      padding: 1rem 2rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .stat-number span { color: var(--gold); }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    /* ── SECTIONS ──────────────────────────────────────────── */
+    section { padding: 80px 5%; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      color: var(--navy);
+      line-height: 1.25;
+      max-width: 560px;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.75;
+    }
+
+    /* ── VALUE PROPS ───────────────────────────────────────── */
+    .value-props { background: var(--offwhite); }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .value-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .value-card:hover { box-shadow: 0 8px 32px rgba(11,29,58,0.10); transform: translateY(-3px); }
+
+    .value-icon {
+      width: 48px; height: 48px;
+      background: var(--light);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .value-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .value-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── SERVICES ──────────────────────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--gold);
+    }
+
+    .service-card:hover { box-shadow: 0 8px 28px rgba(11,29,58,0.09); }
+
+    .service-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.6rem;
+    }
+
+    .service-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── ABOUT ─────────────────────────────────────────────── */
+    .about { background: var(--navy); }
+
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about .section-label { color: var(--gold); }
+
+    .about .section-title { color: var(--white); }
+
+    .about p {
+      color: rgba(255,255,255,0.72);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      font-size: 0.97rem;
+    }
+
+    .about-highlights {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .highlight {
+      display: flex; gap: 1rem; align-items: flex-start;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .highlight-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .highlight-text strong {
+      display: block;
+      color: var(--gold);
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .highlight-text span { color: rgba(255,255,255,0.65); font-size: 0.875rem; }
+
+    /* ── TESTIMONIALS ──────────────────────────────────────── */
+    .testimonials { background: var(--light); }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+    }
+
+    .stars { color: var(--gold); font-size: 1rem; margin-bottom: 1rem; }
+
+    .testimonial-card blockquote {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.75;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+    }
+
+    .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
+
+    .author-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem;
+    }
+
+    .author-name { font-weight: 600; font-size: 0.88rem; color: var(--navy); }
+    .author-role { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── SOCIAL ────────────────────────────────────────────── */
+    .social-section { background: var(--white); text-align: center; }
+
+    .social-section .section-title, .social-section .section-label { text-align: center; margin-left: auto; margin-right: auto; }
+
+    .social-icons {
+      display: flex; justify-content: center; gap: 1.25rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.85rem 1.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .social-link:hover { border-color: var(--gold); color: var(--navy); background: var(--light); transform: translateY(-2px); }
+
+    .social-link svg { width: 22px; height: 22px; }
+
+    .li-icon { fill: #0A66C2; }
+    .ig-icon { fill: url(#ig-grad); }
+    .fb-icon { fill: #1877F2; }
+
+    /* ── CONTACT ───────────────────────────────────────────── */
+    .contact { background: var(--navy2); }
+
+    .contact-inner {
+      max-width: 640px; margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact .section-label { justify-content: center; display: block; }
+    .contact .section-title { margin: 0 auto 1rem; color: var(--white); }
+    .contact .section-sub { color: rgba(255,255,255,0.65); margin: 0 auto 2.5rem; }
+
+    .contact-form {
+      display: flex; flex-direction: column; gap: 1rem;
+      text-align: left;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(255,255,255,0.35); }
+
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+
+    .form-group textarea { resize: vertical; min-height: 110px; }
+
+    .contact-info {
+      display: flex; justify-content: center; gap: 2.5rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.9rem;
+    }
+
+    .contact-item a { color: var(--gold); text-decoration: none; }
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      border-top: 1px solid rgba(201,168,76,0.2);
+      padding: 2rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+
+    .footer-copy { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">GEMM <span>Operations Group</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#testimonials">Testimonials</a></li>
+    <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">⚙️ Operational Excellence</div>
+      <h1>Operations That Drive <em>Real Results</em> for Your Business</h1>
+      <p>GEMM Operations Group delivers end-to-end facility and property operations management — so you can focus on what matters most: growing your business.</p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn-primary">Request a Consultation</a>
+        <a href="#services" class="btn-outline">Our Services</a>
+      </div>
+    </div>
+    <div class="hero-logo-wrap">
+      <img src="gemm-operations-logo.png" alt="GEMM Operations Group Logo" />
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number">10<span>+</span></div>
+    <div class="stat-label">Years of Experience</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">200<span>+</span></div>
+    <div class="stat-label">Projects Completed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">98<span>%</span></div>
+    <div class="stat-label">Client Satisfaction</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">50<span>+</span></div>
+    <div class="stat-label">Trusted Clients</div>
+  </div>
+</div>
+
+<!-- VALUE PROPOSITION -->
+<section class="value-props" id="value">
+  <div class="section-label">Why GEMM</div>
+  <div class="section-title">We Don't Just Manage Operations — We Optimize Them</div>
+  <p class="section-sub">Our approach combines proven systems, hands-on expertise, and a relentless commitment to quality that delivers measurable impact from day one.</p>
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-icon">🎯</div>
+      <h3>Results-Focused</h3>
+      <p>Every engagement is tied to clear deliverables and measurable outcomes — no fluff, no filler.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🤝</div>
+      <h3>Trusted Partner</h3>
+      <p>We act as an extension of your team, not just another vendor. Long-term relationships are our foundation.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">⚡</div>
+      <h3>Responsive & Reliable</h3>
+      <p>When issues arise, we're there. Fast communication and dependable follow-through set us apart.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">📊</div>
+      <h3>Data-Driven Decisions</h3>
+      <p>We use real-time data and reporting to identify inefficiencies and drive continuous improvement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-label">What We Do</div>
+  <div class="section-title">Comprehensive Operations Solutions</div>
+  <p class="section-sub">From day-to-day facility oversight to strategic planning, GEMM Operations Group covers every aspect of your operational needs.</p>
+  <div class="services-grid">
+    <div class="service-card">
+      <h3>🏢 Facility Management</h3>
+      <p>Full-service oversight of your facilities — from maintenance scheduling to vendor coordination — keeping your operations running without interruption.</p>
+    </div>
+    <div class="service-card">
+      <h3>🏠 Property Operations</h3>
+      <p>Comprehensive property management that maximizes asset performance while reducing operational costs and tenant friction.</p>
+    </div>
+    <div class="service-card">
+      <h3>🔧 Vendor Coordination</h3>
+      <p>We source, vet, and manage your vendor relationships so you get consistent quality at the best value, every time.</p>
+    </div>
+    <div class="service-card">
+      <h3>📋 Project Management</h3>
+      <p>Structured project oversight with clear timelines, milestones, and accountability to ensure every initiative lands on time and on budget.</p>
+    </div>
+    <div class="service-card">
+      <h3>📈 Process Optimization</h3>
+      <p>We audit your existing workflows, identify waste, and implement scalable improvements that save time and money.</p>
+    </div>
+    <div class="service-card">
+      <h3>📑 Compliance & Reporting</h3>
+      <p>Detailed reporting and compliance tracking to keep you ahead of regulatory requirements and fully informed at every level.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div>
+      <div class="section-label">Our Story</div>
+      <div class="section-title" style="color:#fff;">Built on Integrity. Driven by Excellence.</div>
+      <p>GEMM Operations Group was founded with a simple but powerful belief: that businesses deserve an operations partner who shows up, follows through, and genuinely cares about outcomes.</p>
+      <p>Led by Gabino Martinez, our team brings hands-on experience across property management, facility operations, and organizational leadership. We've built our reputation one successful project at a time.</p>
+      <p>Whether you're managing a single property or scaling a multi-site operation, we bring the structure, expertise, and accountability that your business deserves.</p>
+    </div>
+    <div class="about-highlights">
+      <div class="highlight">
+        <div class="highlight-icon">🏆</div>
+        <div class="highlight-text">
+          <strong>Proven Leadership</strong>
+          <span>Years of hands-on experience leading complex operational programs across multiple industries.</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-icon">🌐</div>
+        <div class="highlight-text">
+          <strong>Bilingual Service</strong>
+          <span>We serve English and Spanish-speaking clients with equal professionalism and care.</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-icon">🔒</div>
+        <div class="highlight-text">
+          <strong>Fully Accountable</strong>
+          <span>We own our commitments. You'll always know where things stand — no surprises.</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-icon">💡</div>
+        <div class="highlight-text">
+          <strong>Innovative Thinking</strong>
+          <span>We bring fresh solutions to longstanding challenges, making your operation smarter and leaner.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-label">Social Proof</div>
+  <div class="section-title">What Our Clients Say</div>
+  <p class="section-sub">We measure our success by the success of the clients who trust us.</p>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"GEMM Operations Group transformed how we manage our facilities. Communication is outstanding and they consistently deliver above expectations."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">MR</div>
+        <div>
+          <div class="author-name">Maria R.</div>
+          <div class="author-role">Property Manager, South Florida</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Finally, an operations team that actually follows through. Gabino and his team are professional, reliable, and genuinely invested in our success."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">JD</div>
+        <div>
+          <div class="author-name">James D.</div>
+          <div class="author-role">Business Owner</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"The level of organization and reporting they provide is unlike anything I've experienced with other vendors. Highly recommend."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">CL</div>
+        <div>
+          <div class="author-name">Carlos L.</div>
+          <div class="author-role">Facilities Director</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL MEDIA -->
+<section class="social-section">
+  <div class="section-label">Connect With Us</div>
+  <div class="section-title">Follow GEMM Operations Group</div>
+  <p class="section-sub" style="margin: 0 auto;">Stay updated with insights, projects, and operational tips from our team.</p>
+  <div class="social-icons">
+
+    <!-- LinkedIn -->
+    <a href="https://www.linkedin.com/company/gemm-operations-group/" target="_blank" class="social-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path class="li-icon" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      LinkedIn
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/gemmoperationsgroup" target="_blank" class="social-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#f09433"/>
+            <stop offset="25%" style="stop-color:#e6683c"/>
+            <stop offset="50%" style="stop-color:#dc2743"/>
+            <stop offset="75%" style="stop-color:#cc2366"/>
+            <stop offset="100%" style="stop-color:#bc1888"/>
+          </linearGradient>
+        </defs>
+        <path class="ig-icon" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+      </svg>
+      Instagram
+    </a>
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/profile.php?id=61567657486662" target="_blank" class="social-link">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path class="fb-icon" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+      Facebook
+    </a>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="section-label">Get In Touch</div>
+    <div class="section-title">Let's Talk About Your Operations</div>
+    <p class="section-sub">Ready to bring structure and results to your business? Fill out the form and we'll be in touch within one business day.</p>
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="John" required />
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" placeholder="Doe" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="john@company.com" required />
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" placeholder="(555) 000-0000" />
+      </div>
+      <div class="form-group">
+        <label>Service Needed</label>
+        <select>
+          <option value="">Select a service...</option>
+          <option>Facility Management</option>
+          <option>Property Operations</option>
+          <option>Vendor Coordination</option>
+          <option>Project Management</option>
+          <option>Process Optimization</option>
+          <option>Compliance & Reporting</option>
+          <option>Other / General Inquiry</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea placeholder="Tell us about your project or needs..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary" style="align-self:flex-start; border:none; cursor:pointer;">Send Message</button>
+    </form>
+    <div class="contact-info">
+      <div class="contact-item">📧 <a href="mailto:licenciadopr@gmail.com">licenciadopr@gmail.com</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">GEMM Operations Group</div>
+  <div class="footer-copy">© 2026 GEMM Operations Group. All rights reserved.</div>
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert('Thank you for reaching out! We will get back to you within one business day.');
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
